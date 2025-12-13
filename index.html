@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Queue System Application</title>
+        <link rel="stylesheet" href="New edit/style.css" />
+        <link rel="stylesheet" href="New edit/custom-select.css" />
+        <link rel="stylesheet" href="New edit/responsive.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <div class="main-container">
+            <div class="controls-section">
+                <h1>Queue System</h1>
+                <img class="underline" src="assets/Line 1.png" alt="text underline" />
+
+                <form id="queue-form">
+                    <div class="form-column-left">
+                        <div class="input-group full-width">
+                            <label for="system-type">Choose system type</label>
+                            <div class="custom-select-wrapper">
+                                <select id="system-type" name="system-type" style="display: none">
+                                    <option value="D/D/1/K-1">D/D/1/K-1</option>
+                                    <option value="M/M/1">M/M/1</option>
+                                    <option value="M/M/C">M/M/C</option>
+                                </select>
+                                <div class="custom-select">
+                                    <div class="custom-select__trigger">
+                                        <span>D/D/1/K-1</span>
+                                        <div class="arrow"></div>
+                                    </div>
+                                    <div class="custom-options">
+                                        <span class="custom-option selected" data-value="D/D/1/K-1">D/D/1/K-1</span>
+                                        <span class="custom-option" data-value="M/M/1">M/M/1</span>
+                                        <span class="custom-option" data-value="M/M/C">M/M/C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="arrival-rate">Arrival Rate </label>
+                                <input
+                                    type="text"
+                                    id="arrival-rate"
+                                    name="arrival-rate"
+                                    placeholder="Enter the value of  λ"
+                                />
+                            </div>
+                            <div class="input-group">
+                                <label for="service-rate">Service Rate </label>
+                                <input
+                                    type="text"
+                                    id="service-rate"
+                                    name="service-rate"
+                                    placeholder="Enter the value of  μ"
+                                />
+                            </div>
+                            <div class="input-group K">
+                                <label for="system-constant">System Constant </label>
+                                <input
+                                    type="text"
+                                    id="system-constant"
+                                    name="system-constant"
+                                    placeholder="Enter the value of  K"
+                                />
+                            </div>
+                            <div class="input-group M">
+                                <label for="initial-customers">Initial no. of customers </label>
+                                <input
+                                    type="text"
+                                    id="initial-customers"
+                                    name="initial-customers"
+                                    placeholder="Enter the value of  M"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-column-right">
+                        <div class="input-group" id="time-input-group">
+                            <label for="indicating-time">Indicating Time </label>
+                            <input
+                                type="text"
+                                id="indicating-time"
+                                name="indicating-time"
+                                placeholder="Enter the value of  t"
+                            />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" id="calc-nt-btn" class="btn btn-primary-small">Calculate n(t)</button>
+                            <button type="button" id="calc-lq-btn" class="btn btn-primary-small" style="display: none">
+                                Calculate Lq
+                            </button>
+                            <button type="button" id="calc-wq-btn" class="btn btn-primary-small wq">
+                                Calculate Wq(n)
+                            </button>
+                            <button
+                                type="button"
+                                id="calc-real-wq-btn"
+                                class="btn btn-primary-small wq"
+                                style="display: none"
+                            >
+                                Calculate Wq
+                            </button>
+                            <button type="button" id="sketch-btn" class="btn btn-secondary full-width">
+                                Sketch the diagram
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="image-section">
+                <img src="assets/Rectangle 2.png" alt="3D illustration of a queue system" />
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+        <script src="index.js"></script>
+    </body>
+</html>

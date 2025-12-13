@@ -1,0 +1,84 @@
+/* Responsive Design */
+
+@media (max-width: 900px) {
+    .main-container {
+        display: block; /* Remove flex to stack naturally, or keep flex column */
+        position: relative;
+        width: 95%;
+        margin: 20px auto;
+        max-width: 600px;
+        background-color: transparent !important; /* Let background show through */
+        overflow: hidden;
+        min-height: 600px; /* Ensure height for background */
+    }
+
+    /* Background Image Container */
+    .image-section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        z-index: 0;
+    }
+
+    .image-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 20px;
+        opacity: 0.5; /* Low opacity for contrast */
+    }
+
+    .controls-section {
+        position: relative;
+        z-index: 1; /* Place above image */
+        padding: 30px 20px;
+        background-color: rgba(255, 255, 255, 0.661); /* Much more transparent */
+        border-radius: 20px;
+        backdrop-filter: blur(3px); /* Optional: nice glass effect */
+    }
+
+    h1 {
+        font-size: 3rem;
+    }
+
+    .underline {
+        width: 17rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .input-grid {
+        grid-template-columns: 1fr;
+        row-gap: 15px;
+    }
+
+    .button-group {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-secondary {
+        grid-column: auto;
+    }
+
+    /* Ensure full width for inputs in single column */
+    .input-group.K {
+        grid-column: auto !important;
+    }
+}
+
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .main-container {
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+}

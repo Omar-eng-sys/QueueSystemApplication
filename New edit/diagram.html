@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Queue System Diagram</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background-color: #e0e1e2;
+                font-family: "Inter", sans-serif;
+            }
+            .chart-container {
+                width: 80%;
+                max-width: 900px;
+                padding: 20px;
+                background-color: #faf6ef9e;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            }
+
+            h2,
+            canvas {
+                color: #48607c;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="chart-container">
+            <h2>System diagram for the number of customers</h2>
+            <canvas id="queueChartCanvas"></canvas>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+        <script src="../diagram.js?v=5"></script>
+    </body>
+</html>

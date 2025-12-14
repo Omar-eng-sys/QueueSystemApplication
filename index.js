@@ -185,6 +185,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const realWqButton = document.getElementById("calc-real-wq-btn");
     const sketchButton = document.getElementById("sketch-btn");
 
+    // ===== Input Validation Listener =====
+    const formInputs = [arrivalRateInput, serviceRateInput, kInput, mInput, tInput];
+
+    formInputs.forEach(input => {
+        input.addEventListener("keydown", e => {
+            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter", "/"];
+
+            // Allow control keys and shortcuts (Ctrl/Meta+C/V/A)
+            if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
+                return;
+            }
+
+            // Prevent non-digit keys (blocks text, symbols except /, decimals, negatives)
+            if (!/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+                return;
+            }
+
+            // Prevent 0 as the starting character for ALL inputs
+            if (e.key === "0" && e.target.value === "") {
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener("input", e => {
+            // Sanitize: allow only digits and /
+            e.target.value = e.target.value.replace(/[^0-9/]/g, "");
+
+            // If the value is exactly "0", clear it for ALL inputs
+            if (e.target.value === "0") {
+                e.target.value = "";
+            }
+        });
+    });
+
     // ===== sweet alert function =====
     function showThemedAlert(title, text = "", icon = "info") {
         Swal.fire({
@@ -273,6 +308,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== 2. M/M/C Logic (Updated & Verified with Lecture) =====
 
+    function factorial(n) {
+        if (n === 0 || n === 1) return 1;
+        let result = 1;
+        for (let i = 2; i <= n; i++) result *= i;
+        return result;
+    }
     function calculateMMC(lambda, mu, c) {
         const r = lambda / mu; // Traffic intensity (r)
         const rho = r / c; // Utilization factor (rho)
@@ -334,9 +375,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (type === "D/D/1/K-1") {
             const k = safeParse(kInput.value);
-            const m = safeParse(mInput.value);
+            // Default M to 0 if empty
+            let mVal = mInput.value.trim();
+            const m = mVal === "" ? 0 : safeParse(mVal);
             const t = safeParse(tInput.value);
 
+            // Check if k or t are invalid (M is handled separately)
             if (isNaN(k) || isNaN(m) || isNaN(t)) {
                 showThemedAlert("Missing Data!", "Please fill all input fields with valid numbers.", "warning");
                 return;
@@ -415,7 +459,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (type === "D/D/1/K-1") {
             const k = safeParse(kInput.value);
-            const m = safeParse(mInput.value);
+            // Default M to 0 if empty
+            let mVal = mInput.value.trim();
+            const m = mVal === "" ? 0 : safeParse(mVal);
 
             if (isNaN(k) || isNaN(m)) {
                 showThemedAlert(

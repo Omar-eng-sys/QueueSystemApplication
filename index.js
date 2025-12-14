@@ -93,7 +93,7 @@ function calculate_n_t(t, lambda, mu, ti, k, m) {
             }
         }
     }
-    // Case 2: Non-Saturation (Mu > Lambda) -> Kept original logic (Queue empties)
+    // Case 2: Non-Saturation (Mu > Lambda)
     else if (mu > lambda) {
         // Note: Usually ti here means time to empty.
         // We use the passed 'ti' which should be calculated by getTiSecondCase
@@ -119,7 +119,7 @@ function getTiSecondCase(lambda, mu, m) {
     return m / (mu - lambda);
 }
 
-// Calculating wq (Kept mostly as is, but relies on accurate n(t))
+// Calculating wq
 function waitingTime(lambda, mu, ti, M, nOft) {
     let Wq;
 
@@ -147,6 +147,28 @@ function waitingTime(lambda, mu, ti, M, nOft) {
 }
 
 // ===== Main Application Logic =====
+
+// Safe parsing helper to replace eval()
+function safeParse(val) {
+    if (!val) return NaN;
+    const str = String(val).trim();
+    // Allow numbers, minus sign, decimal point, forward slash. Reject everything else.
+    if (!/^[-0-9./]+$/.test(str)) return NaN;
+
+    // Handle fractions
+    if (str.includes("/")) {
+        const parts = str.split("/");
+        if (parts.length !== 2) return NaN;
+        const num = parseFloat(parts[0]);
+        const den = parseFloat(parts[1]);
+        if (isNaN(num) || isNaN(den) || den === 0) return NaN;
+        return num / den;
+    }
+
+    // Strict number check
+    const num = Number(str);
+    return isNaN(num) ? NaN : num;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     // ===  Select ALL elements from HTML page ===
@@ -294,26 +316,38 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     ntButton.addEventListener("click", () => {
         const type = systemTypeSelect.value;
-        const lambda = eval(arrivalRateInput.value);
-        const mu = eval(serviceRateInput.value);
+        const lambda = safeParse(arrivalRateInput.value);
+        const mu = safeParse(serviceRateInput.value);
 
         if (isNaN(lambda) || isNaN(mu)) {
-            showThemedAlert("Missing Data!", "Please check Lambda and Mu values.", "warning");
+            showThemedAlert(
+                "Invalid Data!",
+                "Please check Lambda and Mu values. Use positive numbers or fractions (e.g. 1/2).",
+                "warning"
+            );
+            return;
+        }
+        if (lambda < 0 || mu < 0) {
+            showThemedAlert("Invalid Data!", "Lambda and Mu must be non-negative.", "warning");
             return;
         }
 
         if (type === "D/D/1/K-1") {
-            const k = parseFloat(kInput.value);
-            const m = parseFloat(mInput.value);
-            const t = parseFloat(tInput.value);
+            const k = safeParse(kInput.value);
+            const m = safeParse(mInput.value);
+            const t = safeParse(tInput.value);
 
             if (isNaN(k) || isNaN(m) || isNaN(t)) {
-                showThemedAlert("Missing Data!", "Please fill all input fields.", "warning");
+                showThemedAlert("Missing Data!", "Please fill all input fields with valid numbers.", "warning");
+                return;
+            }
+            if (k < 0 || m < 0 || t < 0) {
+                showThemedAlert("Invalid Data!", "K, M, and t must be non-negative.", "warning");
                 return;
             }
 
             let ti = 0;
-            // UPDATED: Using the new Simulation function for Lambda > Mu
+
             if (lambda > mu) {
                 // Using the Simulation Logic derived from Java
                 ti = getTiSaturation(lambda, mu, k);
@@ -347,7 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const L = lambda / (mu - lambda);
             showResultAlert(`Average number of customers L = <strong>${L.toFixed(4)}</strong>`);
         } else if (type === "M/M/C") {
-            // ... M/M/C Logic (Unchanged) ...
+            // ... M/M/C Logic ...
             const c = parseFloat(kInput.value);
             if (isNaN(c)) {
                 showThemedAlert("Missing Data!", "Please enter the number of servers (C).", "warning");
@@ -367,25 +401,37 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     wqButton.addEventListener("click", async () => {
         const type = systemTypeSelect.value;
-        const lambda = eval(arrivalRateInput.value);
-        const mu = eval(serviceRateInput.value);
+        const lambda = safeParse(arrivalRateInput.value);
+        const mu = safeParse(serviceRateInput.value);
 
         if (isNaN(lambda) || isNaN(mu)) {
-            showThemedAlert("Missing Data!", "Please check Lambda and Mu values.", "warning");
+            showThemedAlert("Invalid Data!", "Please check Lambda and Mu values.", "warning");
+            return;
+        }
+        if (lambda < 0 || mu < 0) {
+            showThemedAlert("Invalid Data!", "Lambda and Mu must be non-negative.", "warning");
             return;
         }
 
         if (type === "D/D/1/K-1") {
-            const k = parseFloat(kInput.value);
-            const m = parseFloat(mInput.value);
+            const k = safeParse(kInput.value);
+            const m = safeParse(mInput.value);
 
             if (isNaN(k) || isNaN(m)) {
-                showThemedAlert("Missing Data!", "System Constant (K) and Initial Customers (M).", "warning");
+                showThemedAlert(
+                    "Missing Data!",
+                    "System Constant (K) and Initial Customers (M) must be valid numbers.",
+                    "warning"
+                );
+                return;
+            }
+            if (k < 0 || m < 0) {
+                showThemedAlert("Invalid Data!", "K and M must be non-negative.", "warning");
                 return;
             }
 
             let ti = 0;
-            // UPDATED: Using new logic here too
+
             if (lambda > mu) {
                 ti = getTiSaturation(lambda, mu, k);
                 if (ti === -1) {
@@ -423,7 +469,6 @@ document.addEventListener("DOMContentLoaded", () => {
                                  <br><small>(Calculated with ti = ${ti.toFixed(2)})</small>`;
             showResultAlert(resultMessage);
         } else if (type === "M/M/1" || type === "M/M/C") {
-            // ... Kept Unchanged ...
             if (type === "M/M/1") {
                 if (lambda >= mu) {
                     showThemedAlert("Unstable System", "Lambda < Mu required.", "error");
@@ -447,17 +492,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ... Remainder of the code (lqButton, realWqButton, sketchButton, Custom Select) ...
-    // ... Copy the rest from your original file starting from lqButton event listener ...
-
     lqButton.addEventListener("click", () => {
-        // ... (Same as original) ...
         const type = systemTypeSelect.value;
-        const lambda = eval(arrivalRateInput.value);
-        const mu = eval(serviceRateInput.value);
+        const lambda = safeParse(arrivalRateInput.value);
+        const mu = safeParse(serviceRateInput.value);
 
         if (isNaN(lambda) || isNaN(mu)) {
-            showThemedAlert("Missing Data!", "Please check Lambda and Mu values.", "warning");
+            showThemedAlert("Invalid Data!", "Please check Lambda and Mu values.", "warning");
+            return;
+        }
+        if (lambda < 0 || mu < 0) {
+            showThemedAlert("Invalid Data!", "Lambda and Mu must be non-negative.", "warning");
             return;
         }
 
@@ -484,13 +529,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     realWqButton.addEventListener("click", () => {
-        // ... (Same as original) ...
         const type = systemTypeSelect.value;
-        const lambda = eval(arrivalRateInput.value);
-        const mu = eval(serviceRateInput.value);
+        const lambda = safeParse(arrivalRateInput.value);
+        const mu = safeParse(serviceRateInput.value);
 
         if (isNaN(lambda) || isNaN(mu)) {
-            showThemedAlert("Missing Data!", "Please check Lambda and Mu values.", "warning");
+            showThemedAlert("Invalid Data!", "Please check Lambda and Mu values.", "warning");
+            return;
+        }
+        if (lambda < 0 || mu < 0) {
+            showThemedAlert("Invalid Data!", "Lambda and Mu must be non-negative.", "warning");
             return;
         }
 
@@ -517,21 +565,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     sketchButton.addEventListener("click", () => {
-        // ... (Same as original) ...
-        const lambda = eval(arrivalRateInput.value);
-        const mu = eval(serviceRateInput.value);
-        const k = parseFloat(kInput.value);
-        const t = parseFloat(tInput.value);
+        const lambda = safeParse(arrivalRateInput.value);
+        const mu = safeParse(serviceRateInput.value);
+        const k = safeParse(kInput.value);
+        const t = safeParse(tInput.value);
 
         if (isNaN(lambda) || isNaN(mu) || isNaN(k) || isNaN(t)) {
-            showThemedAlert("Missing Data !", "Enter Lambda, Mu, K, and t.", "warning");
+            showThemedAlert("Invalid Data!", "Enter valid numeric values for Lambda, Mu, K, and t.", "warning");
+            return;
+        }
+        if (lambda < 0 || mu < 0 || k < 0 || t < 0) {
+            showThemedAlert("Invalid Data!", "Values cannot be negative.", "warning");
             return;
         }
         const url = `New edit/diagram.html?lambda=${lambda}&mu=${mu}&k=${k}&t=${t}`;
         window.location.href = url;
     });
 
-    // === Custom Select Logic (Same as original) ===
+    // === Custom Select Logic ===
     const customSelectWrapper = document.querySelector(".custom-select-wrapper");
     const customSelect = customSelectWrapper.querySelector(".custom-select");
     const customSelectTrigger = customSelect.querySelector(".custom-select__trigger");
